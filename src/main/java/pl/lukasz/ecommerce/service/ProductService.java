@@ -2,8 +2,10 @@ package pl.lukasz.ecommerce.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pl.lukasz.ecommerce.dto.ProductRequest;
 import pl.lukasz.ecommerce.dto.ProductResponse;
+import pl.lukasz.ecommerce.exception.OutOfStockException;
 import pl.lukasz.ecommerce.exception.ProductNotFoundException;
 import pl.lukasz.ecommerce.mapper.ProductMapper;
 import pl.lukasz.ecommerce.model.Product;
@@ -49,5 +51,17 @@ public class ProductService {
             throw new ProductNotFoundException("Product with id " + id + " not found");
         }
         productRepository.deleteById(id);
+    }
+
+    @Transactional
+    public ProductResponse purchaseProduct(Long id, int quantity){
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new ProductNotFoundException("Product with id " + id + " not found"));
+
+        if(product.getStockQuantity() < quantity){
+            throw new OutOfStockException("Not enough stock for product: " + product.getName());
+        }
+        product.setStockQuantity(product.getStockQuantity() - quantity);
+        return productMapper.toDto(productRepository.save(product));
     }
 }
