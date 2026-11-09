@@ -9,7 +9,7 @@ import lombok.Data;
 import java.math.BigDecimal;
 
 @Data
-public class ProductRequest {
+public class  ProductRequest {
     @NotBlank(message = "Product name cannot be blank")
     private String name;
 
