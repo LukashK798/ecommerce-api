@@ -1,12 +1,10 @@
 package pl.lukasz.ecommerce.service;
 
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import pl.lukasz.ecommerce.dto.ProductResponse;
 import pl.lukasz.ecommerce.exception.OutOfStockException;
 import pl.lukasz.ecommerce.exception.ProductNotFoundException;
 import pl.lukasz.ecommerce.mapper.ProductMapper;
@@ -14,7 +12,6 @@ import pl.lukasz.ecommerce.model.Product;
 import pl.lukasz.ecommerce.repository.ProductRepository;
 import java.util.Optional;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
