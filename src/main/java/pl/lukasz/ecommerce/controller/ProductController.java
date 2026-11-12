@@ -1,13 +1,11 @@
 package pl.lukasz.ecommerce.controller;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import pl.lukasz.ecommerce.dto.ProductRequest;
 import pl.lukasz.ecommerce.dto.ProductResponse;
-import pl.lukasz.ecommerce.model.Product;
 import pl.lukasz.ecommerce.service.ProductService;
 
 import java.util.List;
@@ -15,6 +13,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/products")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*")
 
 public class ProductController {
     private final ProductService productService;
@@ -49,6 +48,11 @@ public class ProductController {
     @PostMapping("/{id}/purchase")
     public ProductResponse purchaseProduct(@PathVariable Long id, @RequestParam(defaultValue = "1") int quantity){
         return productService.purchaseProduct(id, quantity);
+    }
+
+    @GetMapping("/low-stock")
+    public List<ProductResponse> getLowStockProducts(@RequestParam(defaultValue = "5") int threshold){
+        return productService.getLowStockProducts(threshold);
     }
 }
 

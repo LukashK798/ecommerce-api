@@ -64,4 +64,11 @@ public class ProductService {
         product.setStockQuantity(product.getStockQuantity() - quantity);
         return productMapper.toDto(productRepository.save(product));
     }
+
+    public List<ProductResponse> getLowStockProducts(int threshold){
+        return productRepository.findLowStockProducts(threshold)
+                .stream()
+                .map(productMapper::toDto)
+                .toList();
+    }
 }
