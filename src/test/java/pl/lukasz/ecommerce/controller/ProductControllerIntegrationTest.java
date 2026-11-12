@@ -1,40 +1,18 @@
 package pl.lukasz.ecommerce.controller;
 
-import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
+import pl.lukasz.ecommerce.IntegrationTestBase;
+import pl.lukasz.ecommerce.dto.ProductResponse;
 import pl.lukasz.ecommerce.model.Product;
 import pl.lukasz.ecommerce.repository.ProductRepository;
-
-import static org.hamcrest.Matchers.equalTo;
-
 import java.math.BigDecimal;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static io.restassured.RestAssured.given;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Testcontainers
-public class ProductControllerIntegrationTest {
-
-    @Container
-    @ServiceConnection
-    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:latest");
-
-    @LocalServerPort
-    private int port;
-
-    @BeforeEach
-    public void setUp() {
-        RestAssured.port = port;
-    }
+public class ProductControllerIntegrationTest extends IntegrationTestBase {
 
     @Autowired
     private ProductRepository productRepository;
@@ -49,14 +27,18 @@ public class ProductControllerIntegrationTest {
 
         Product savedProduct = productRepository.save(product);
 
-        given()
+        ProductResponse response = given()
                 .contentType(ContentType.JSON)
                 .when()
                 .get("/api/products/{id}", savedProduct.getId())
                 .then()
                 .statusCode(200)
-                .body("id", equalTo(savedProduct.getId().intValue()))
-                .body("name", equalTo(savedProduct.getName()))
-                .body("stockQuantity", equalTo(savedProduct.getStockQuantity()));
+                .extract()
+                .as(ProductResponse.class);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getId()).isEqualTo(savedProduct.getId());
+        assertThat(response.getName()).isEqualTo(savedProduct.getName());
+        assertThat(response.getStockQuantity()).isEqualTo(savedProduct.getStockQuantity());
     }
 }
